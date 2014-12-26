@@ -1,12 +1,16 @@
 <?php
 
+/**
+ * author: Group One
+ * date: 19th February 2014
+ * description: A root class for all manage classes. This class communicates with DB
+ */
+
 define("DB_HOST", 'localhost');
-define("DB_NAME", 'busapp_db');
+define("DB_NAME", 'csashesi_winfred-adrah');
 define("DB_PORT", 3306);
-define("DB_USER","root");
-define("DB_PWORD","");
-
-
+define("DB_USER","csashesi_wa15");
+define("DB_PWORD","db!207e7f");
 
 define("LOG_LEVEL_SEC",0);
 define("LOG_LEVEL_DB_FAIL",0);

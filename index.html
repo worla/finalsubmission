@@ -2,97 +2,124 @@
 <head>
 	<meta charset="UTF-8">
 	<title></title>
-	<link rel="stylesheet" type="text/css" href="../user/jquery-mobile/jquery.mobile-1.4.4.css">
+	<link rel="stylesheet" type="text/css" href="http://50.63.128.135/~csashesi/class2015/winfred-adrah/bustracker2/jquery-mobile/jquery.mobile-1.4.4.css">
 
-	<script type="text/javascript", src="jquery.min.js"></script>
-	<script type="text/javascript" src="../driver/jquery-mobile/jquery.mobile-1.4.4.js"></script>
-  <script type="text/javascript" src="../driver/jquery-mobile/Barcode.js"></script>
+	<script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+	<script type="text/javascript", src="http://50.63.128.135/~csashesi/class2015/winfred-adrah/bustracker2/jquery.min.js"></script>
+	<script type="text/javascript" src="http://50.63.128.135/~csashesi/class2015/winfred-adrah/bustracker2/jquery-mobile/jquery.mobile-1.4.4.js"></script>
+	
 <script type="text/javascript">
 
 
-var t;
 function syncAjax(u){
-		console.log(u);
+		console.log(u); 
         var obj=$.ajax(
           {url:u,
            async:false
            }
-        ); 
+        );
         return $.parseJSON(obj.responseText);
         return console.log(obj.responseText);
         
       }
 
-      $(document).ready(function(){
 
-      $("#refresh").click(function(){
-        r=syncAjax("index_json.php?cmd=1&id=1");
-        $('#seats').text(r.busapp.seats);
-      });
+$(document).ready(function(){
+	$("#join").click(function(){
+		var x = parseInt($('#seats_available').text(), 10);
+			if (x > 0 && x <= x ){
+			var sub = x-1;
+			var nop = parseInt($('#pass').text(), 10);
+			nop++;
+			var cos = nop*2;
+			$('#rev').text(cos);
+			$('#pass').text(nop);
+			$('#seats_available').text(sub);
+			var u = "index_json.php?cmd=3&id=1&n="+sub;
+			return syncAjax(u);
+			}
+	});
 
-      $("#reserve").click(function(){
-        var n = $('#name').val();
-        var u = "index_json.php?cmd=8&n="+n;
-        return syncAjax(u);
-        document.getElementById("reserve").disabled = true;
-      });
+	$("#left").click(function(){
+		var x = parseInt($('#seats_available').text(), 10);
+		if (x >= 0 && x < 45 ){
+			var add = x+1;
+			$('#seats_available').text(add);
+			var u = "index_json.php?cmd=3&id=1&n="+add+"&l="+location;
+			return syncAjax(u);
+			}
+	});
 
-      $("#generate").click(function(){
-        var nn = ($('#getcode').val());
-        r=syncAjax("index_json.php?cmd=6&n="+nn);
-		$('#inputdata').text(r.busapp.code);
-      });
-
+$("#reset").click(function(){
+	r=syncAjax("index_json.php?cmd=1");
+	d=syncAjax("index_json.php?cmd=5");
+	var x =(r.busapp.default_seats)-(d.busapp.number);
+	$('#seats_available').text(x);
+	$('#rev').text('0');
+	$('#pass').text('0');
+	});
 });
 </script>	
 </head>
 <body>
+<script>
+function getList(){
+	var u="index_json.php?cmd=4";
+	r=syncAjax(u);
+	for(var i=0;i<r.busapp.length;i++){
+	var list = "Name: " + r.busapp[i].name + " " + " location:" + r.busapp[i].location;
+	$('<li>'+ list +'</li>').appendTo($('#list'));
+	}
+	}
+</script>
+	
 
-      <div id = "user_page">
-
-      		<div data-role="header">
-      		  <div data-role="navbar">
-      		    <ul>
-      		      <li><a href="#anylink" data-icon="search">Home</a></li>
-      		      <li><a href="#anylink" data-icon="search">Page Two</a></li>
-      		      <li><a href="#anylink" data-icon="search">Search</a></li>
-      		    </ul>
-      		  </div>
-      		</div>	
-
+	<div data-role="page" id="pageone">
+	
+		<div data-role="header">
+		  <div data-role="navbar">
+		    <ul>
+		      <li><a href="#anylink" data-icon="search">Home</a></li>
+		      <li><a href="#anylink" data-icon="search">Page Two</a></li>
+		      <li><a href="#anylink" data-icon="search">Search</a></li>
+		    </ul>
+		  </div>
+		</div>	
+		
 	<div role="main" class="ui-content">
-	<!-- this is where i get the location of the bus -->
-  <p id ='seats'>Refresh For seats</p>
+<center>
+	<div><h2>Seats Available</h2></div>
+	<div id= "seats_available">0</div>
 
-
-  <div data-role>
-    <button id="refresh" data-icon="refresh">Number of people on bus</button>
-  </div>
-  </div>
-
-<button onclick="getLocation()">Get Bus Location</button>
+	<div  data-role="controlgroup" data-type="horizontal">
+		<button id ="join" data-icon= "plus">JOINED</button>
+		<button id="reset" data-icon="refresh">RESET</button>
+		<button id ="left" data-icon="minus">LEFT</button>
+	</div>
+<div>
+		<button onclick="getLocation()">Get Bus Location</button>
 
 <div id="mapholder"></div>
 
-<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
-	<!-- this is the en of the code that gets the location of the bus on a map. -->
-<h2>Reserve A seat</h2>
-  <div id="form">
-    <input id ="name" value="" placeholder="Enter name"/>
-    <input id = "set_location" value ="" placeholder="Enter location"/> 
-    <button id ="reserve" onclick="refresh()">Reserve A Seat</button>
-  </div>
+	</div>
+	
+	<div><h2 onclick='getList()'>Tap Me For Reserved Seat Users</h2></div>
+	<ul id='list'>
+	</ul>
+	<h2>Revenue:<p id='rev'></p></h2>
+	<h2>Passengers:<p id='pass'></p></h2>
+</center>
+	
+			<div data-role="footer">	
+				<h1>Insert	Footer	Text	Here</h1>	
+		</div>	
+		
+</div>		
+</div>
 
-  <div>
-    <input id ="getcode" value="" placeholder="Enter name"/>
-    <button id ="generate" onclick="writeBC(document.getElementById('inputdata').innerHTML)" >Click Twice To Get B/ar Code</button>
-    <div id = "inputdata"></div>
-    <div id = "bcArea"></div>
-</div> 
 
 
 <script type="text/javascript">
-
 var x = document.getElementById("demo");
 function getLocation() {
     if (navigator.geolocation) {
@@ -136,31 +163,7 @@ function showError(error) {
             break;
     }
 }
-
-      function writeBC(s)
-{
-    var bc = new AtalasoftBarcode39(s);
-    document.getElementById('bcArea').innerHTML = bc.getBarcode(50, 2, 8);
-}
-        function refresh(){
-          document.location.reload(true);
-        }
-      
-    </script>
-
-
-   
-
-	<div data-role="footer">	
-				<h1>Insert	Footer	Text	Here</h1>	
-		</div>	
-	</div>
-
-</div>
-
-<div >
-
-</div>
+</script>	
 
 </body>
 </html>
